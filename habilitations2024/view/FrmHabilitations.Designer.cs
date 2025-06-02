@@ -33,6 +33,8 @@
             this.btnAdd = new System.Windows.Forms.Button();
             this.btnEdit = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
+            this.lblNewDevName = new System.Windows.Forms.Label();
+            this.txtNewDevName = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDeveloppeurs)).BeginInit();
             this.SuspendLayout();
             // 
@@ -43,6 +45,24 @@
             this.cbxProfil.Name = "cbxProfil";
             this.cbxProfil.Size = new System.Drawing.Size(121, 24); // Example size
             this.cbxProfil.TabIndex = 0;
+            // 
+            // lblNewDevName
+            // 
+            this.lblNewDevName = new System.Windows.Forms.Label();
+            this.lblNewDevName.AutoSize = true;
+            this.lblNewDevName.Location = new System.Drawing.Point(400, 15); // Adjusted location
+            this.lblNewDevName.Name = "lblNewDevName";
+            this.lblNewDevName.Size = new System.Drawing.Size(40, 16);
+            this.lblNewDevName.TabIndex = 5; // Next TabIndex
+            this.lblNewDevName.Text = "Nom:";
+            // 
+            // txtNewDevName
+            // 
+            this.txtNewDevName = new System.Windows.Forms.TextBox();
+            this.txtNewDevName.Location = new System.Drawing.Point(440, 12); // Adjusted location
+            this.txtNewDevName.Name = "txtNewDevName";
+            this.txtNewDevName.Size = new System.Drawing.Size(150, 22);
+            this.txtNewDevName.TabIndex = 6; // Next TabIndex
             // 
             // dgvDeveloppeurs
             // 
@@ -57,7 +77,7 @@
             // btnAdd
             // 
             this.btnAdd = new System.Windows.Forms.Button();
-            this.btnAdd.Location = new System.Drawing.Point(150, 12);
+            this.btnAdd.Location = new System.Drawing.Point(600, 11); // Adjusted location
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(75, 23);
             this.btnAdd.TabIndex = 2;
@@ -88,7 +108,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(800, 450); // Potentially adjust size if controls overflow
+            this.Controls.Add(this.txtNewDevName);
+            this.Controls.Add(this.lblNewDevName);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnEdit);
             this.Controls.Add(this.btnAdd);
@@ -107,6 +129,8 @@
         private System.Windows.Forms.Button btnAdd;
         private System.Windows.Forms.Button btnEdit;
         private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.Label lblNewDevName;
+        private System.Windows.Forms.TextBox txtNewDevName;
     }
 }
 

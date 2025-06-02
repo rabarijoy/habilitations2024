@@ -65,33 +65,53 @@ namespace habilitations2024.view
 
         private void BtnAdd_Click(object sender, EventArgs e)
         {
-            // For simplicity, adding a placeholder developer.
-            // A real application would open a dialog to get developer details.
-            // Also, we need to select a Profil. For now, let's assume we add a "USER".
-            Profil userProfil = profilAccess.GetLesProfils().FirstOrDefault(p => p.Nom == "stagiaire"); // Example: get 'stagiaire' or first available
-            if (userProfil == null && profilAccess.GetLesProfils().Any())
+            string newDevName = txtNewDevName.Text.Trim();
+            if (string.IsNullOrWhiteSpace(newDevName))
             {
-                 userProfil = profilAccess.GetLesProfils().First(); // Fallback to first profile if 'stagiaire' not found
-            }
-            else if (userProfil == null)
-            {
-                MessageBox.Show("Aucun profil disponible pour l'ajout.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Veuillez entrer un nom pour le nouveau développeur.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                txtNewDevName.Focus();
                 return;
             }
 
-            Developpeur newDev = new Developpeur 
-            { 
-                Nom = "Nouveau", 
-                Prenom = "Dev", 
-                Mail = "n.dev@example.com", 
-                Tel = "0123456789", 
-                Profil = userProfil 
+            string? selectedProfilNomInComboBox = cbxProfil.SelectedItem?.ToString();
+            Profil? targetProfil = null;
+
+            if (string.IsNullOrEmpty(selectedProfilNomInComboBox)) // "All" profiles are selected
+            {
+                // If "All" is selected in ComboBox, we need a specific profile for the new developer.
+                // Option 1: Prompt user or use a default. For now, try to use the first available actual profile.
+                targetProfil = profilAccess.GetLesProfils().FirstOrDefault();
+                if (targetProfil == null)
+                {
+                    MessageBox.Show("Aucun profil n'est disponible dans la base de données pour assigner au nouveau développeur.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+            else
+            {
+                targetProfil = profilAccess.GetLesProfils().FirstOrDefault(p => p.Nom == selectedProfilNomInComboBox);
+            }
+
+            if (targetProfil == null) // Should not happen if profiles exist and selection is valid
+            {
+                MessageBox.Show("Profil sélectionné invalide ou aucun profil disponible.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            Developpeur newDev = new Developpeur
+            {
+                Nom = newDevName, // Use name from TextBox
+                Prenom = "(Prénom à définir)", // Placeholder
+                Mail = newDevName.ToLower() + "@example.com", // Placeholder
+                Tel = "(Téléphone à définir)", // Placeholder
+                Profil = targetProfil
             };
 
             if (developpeurAccess.AddDeveloppeur(newDev))
             {
-                MessageBox.Show("Développeur ajouté avec succès.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                LoadDeveloppeurs(cbxProfil.SelectedItem?.ToString());
+                MessageBox.Show($"Développeur '{newDev.Nom}' (Profil: {targetProfil.Nom}) ajouté avec succès.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                txtNewDevName.Clear();
+                LoadDeveloppeurs(cbxProfil.SelectedItem?.ToString()); // Refresh list respecting current filter
             }
             else
             {
@@ -122,7 +142,7 @@ namespace habilitations2024.view
 
             if (developpeurAccess.UpdateDeveloppeur(selectedDev))
             {
-                MessageBox.Show("Développeur modifié avec succès.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Développeur '{selectedDev.Nom}' (Profil: {selectedDev.Profil?.Nom}) modifié avec succès.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LoadDeveloppeurs(cbxProfil.SelectedItem?.ToString());
             }
             else
@@ -141,11 +161,11 @@ namespace habilitations2024.view
 
             Developpeur selectedDev = (Developpeur)dgvDeveloppeurs.CurrentRow.DataBoundItem;
 
-            if (MessageBox.Show($"Êtes-vous sûr de vouloir supprimer {selectedDev.Prenom} {selectedDev.Nom}?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            if (MessageBox.Show($"Êtes-vous sûr de vouloir supprimer {selectedDev.Prenom} {selectedDev.Nom} (Profil: {selectedDev.Profil?.Nom})?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
             {
                 if (developpeurAccess.DeleteDeveloppeur(selectedDev.Id))
                 {
-                    MessageBox.Show("Développeur supprimé avec succès.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Développeur '{selectedDev.Nom}' (Profil: {selectedDev.Profil?.Nom}) supprimé avec succès.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LoadDeveloppeurs(cbxProfil.SelectedItem?.ToString());
                 }
                 else
