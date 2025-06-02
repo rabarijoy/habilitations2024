@@ -23,6 +23,9 @@ namespace habilitations2024.view
             profilAccess = new ProfilAccess();
             developpeurAccess = new DeveloppeurAccess();
             this.Load += new System.EventHandler(this.FrmHabilitations_Load);
+            this.btnAdd.Click += new System.EventHandler(this.BtnAdd_Click);
+            this.btnEdit.Click += new System.EventHandler(this.BtnEdit_Click);
+            this.btnDelete.Click += new System.EventHandler(this.BtnDelete_Click);
         }
 
         private void FrmHabilitations_Load(object sender, EventArgs e)
@@ -58,6 +61,98 @@ namespace habilitations2024.view
             // dgvDeveloppeurs.Columns["Id"].Visible = false;
             // dgvDeveloppeurs.Columns["Profil"].HeaderText = "Profil"; 
             // etc.
+        }
+
+        private void BtnAdd_Click(object sender, EventArgs e)
+        {
+            // For simplicity, adding a placeholder developer.
+            // A real application would open a dialog to get developer details.
+            // Also, we need to select a Profil. For now, let's assume we add a "USER".
+            Profil userProfil = profilAccess.GetLesProfils().FirstOrDefault(p => p.Nom == "stagiaire"); // Example: get 'stagiaire' or first available
+            if (userProfil == null && profilAccess.GetLesProfils().Any())
+            {
+                 userProfil = profilAccess.GetLesProfils().First(); // Fallback to first profile if 'stagiaire' not found
+            }
+            else if (userProfil == null)
+            {
+                MessageBox.Show("Aucun profil disponible pour l'ajout.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            Developpeur newDev = new Developpeur 
+            { 
+                Nom = "Nouveau", 
+                Prenom = "Dev", 
+                Mail = "n.dev@example.com", 
+                Tel = "0123456789", 
+                Profil = userProfil 
+            };
+
+            if (developpeurAccess.AddDeveloppeur(newDev))
+            {
+                MessageBox.Show("Développeur ajouté avec succès.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LoadDeveloppeurs(cbxProfil.SelectedItem?.ToString());
+            }
+            else
+            {
+                MessageBox.Show("Erreur lors de l'ajout du développeur.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void BtnEdit_Click(object sender, EventArgs e)
+        {
+            if (dgvDeveloppeurs.CurrentRow == null || dgvDeveloppeurs.CurrentRow.DataBoundItem == null)
+            {
+                MessageBox.Show("Veuillez sélectionner un développeur à modifier.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            Developpeur selectedDev = (Developpeur)dgvDeveloppeurs.CurrentRow.DataBoundItem;
+            
+            // For simplicity, we'll just change the name and assign to 'admin' profile for testing.
+            // A real app would open a dialog to edit details.
+            selectedDev.Nom = selectedDev.Nom + "_Modifié";
+            Profil adminProfil = profilAccess.GetLesProfils().FirstOrDefault(p => p.Nom == "admin");
+             if (adminProfil == null && profilAccess.GetLesProfils().Any())
+            {
+                 adminProfil = profilAccess.GetLesProfils().First(); // Fallback to first profile
+            }
+
+            if(adminProfil != null) selectedDev.Profil = adminProfil;
+
+            if (developpeurAccess.UpdateDeveloppeur(selectedDev))
+            {
+                MessageBox.Show("Développeur modifié avec succès.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LoadDeveloppeurs(cbxProfil.SelectedItem?.ToString());
+            }
+            else
+            {
+                MessageBox.Show("Erreur lors de la modification du développeur.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void BtnDelete_Click(object sender, EventArgs e)
+        {
+            if (dgvDeveloppeurs.CurrentRow == null || dgvDeveloppeurs.CurrentRow.DataBoundItem == null)
+            {
+                MessageBox.Show("Veuillez sélectionner un développeur à supprimer.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            Developpeur selectedDev = (Developpeur)dgvDeveloppeurs.CurrentRow.DataBoundItem;
+
+            if (MessageBox.Show($"Êtes-vous sûr de vouloir supprimer {selectedDev.Prenom} {selectedDev.Nom}?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            {
+                if (developpeurAccess.DeleteDeveloppeur(selectedDev.Id))
+                {
+                    MessageBox.Show("Développeur supprimé avec succès.", "Succès", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadDeveloppeurs(cbxProfil.SelectedItem?.ToString());
+                }
+                else
+                {
+                    MessageBox.Show("Erreur lors de la suppression du développeur.", "Erreur", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
     }
 }
