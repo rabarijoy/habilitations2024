@@ -21,9 +21,9 @@ SET time_zone = "+00:00";
 -- Base de données : habilitations
 --
 CREATE DATABASE IF NOT EXISTS habilitations DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE USER 'habilitations'@'%' IDENTIFIED BY 'motdepasseuser';
-GRANT USAGE ON *.* TO 'habilitations'@'%';
-GRANT ALL PRIVILEGES ON `habilitations`.* TO 'habilitations'@'%';
+-- CREATE USER 'habilitations'@'%' IDENTIFIED BY 'motdepasseuser';
+-- GRANT USAGE ON *.* TO 'habilitations'@'%';
+-- GRANT ALL PRIVILEGES ON `habilitations`.* TO 'habilitations'@'%';
 USE habilitations;
 
 -- --------------------------------------------------------
